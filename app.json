@@ -1,0 +1,30 @@
+{
+  "name": "Flask-Dance with Fitbit",
+  "description": "Testing Flask-Dance's OAuth integration with Fitbit",
+  "keywords": [
+    "oauth"
+  ],
+  "website": "https://github.com/lila/flask-dance-fitbit",
+  "repository": "https://github.com/lila/flask-dance-fitbit",
+  "env": {
+    "OAUTHLIB_RELAX_TOKEN_SCOPE": {
+      "description": "Indicates that it's OK for Google to return different OAuth scopes than requested.",
+      "value": "true"
+    },
+    "OAUTHLIB_INSECURE_TRANSPORT": {
+      "value": "true"
+    },
+    "FLASK_SECRET_KEY": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    },
+    "FITBIT_OAUTH_CLIENT_ID": {
+      "description": "The OAuth client ID for your application, assigned by Fitbit",
+      "value": "client-id-goes-here"
+    },
+    "FITBIT_OAUTH_CLIENT_SECRET": {
+      "description": "The OAuth client secret for your application, assigned by Fitbit",
+      "value": "client-secret-goes-here"
+    }
+  }
+}
