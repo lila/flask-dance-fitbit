@@ -121,6 +121,7 @@ def login():
 
 
 @app.route("/logout")
+@flask_login.login_required
 def logout():
     """logout from flask-login
 
