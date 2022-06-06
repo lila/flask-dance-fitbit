@@ -32,8 +32,7 @@ from flask_dance.contrib.fitbit import fitbit, make_fitbit_blueprint
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
 app.config["FITBIT_OAUTH_CLIENT_ID"] = os.environ.get("FITBIT_OAUTH_CLIENT_ID")
-app.config["FITBIT_OAUTH_CLIENT_SECRET"] = os.environ.get(
-    "FITBIT_OAUTH_CLIENT_SECRET")
+app.config["FITBIT_OAUTH_CLIENT_SECRET"] = os.environ.get("FITBIT_OAUTH_CLIENT_SECRET")
 fitbit_bp = make_fitbit_blueprint(scope=["activity", "profile"])
 app.register_blueprint(fitbit_bp, url_prefix="/services")
 
@@ -161,10 +160,10 @@ def testfitbitlogin():
     if not fitbit.authorized:
         return "not logged in... error"
 
-    print("access token: " + fitbit_bp.token['access_token'])
-    print("refresh_token: " + fitbit_bp.token['refresh_token'])
-    print("expiration time " + str(fitbit_bp.token['expires_at']))
-    print("             in " + str(fitbit_bp.token['expires_in']))
+    print("access token: " + fitbit_bp.token["access_token"])
+    print("refresh_token: " + fitbit_bp.token["refresh_token"])
+    print("expiration time " + str(fitbit_bp.token["expires_at"]))
+    print("             in " + str(fitbit_bp.token["expires_in"]))
 
     resp = fitbit.get(
         "/1/user/-/profile.json",
@@ -205,23 +204,23 @@ def fitbitexpire():
 
     if fitbit.authorized:
         time_past = time() - 10
-        fitbit_bp.token['expires_at'] = time_past
-        print("access token: " + fitbit_bp.token['access_token'])
-        print("refresh_token: " + fitbit_bp.token['refresh_token'])
-        print("expiration time " + str(fitbit_bp.token['expires_at']))
-        print("             in " + str(fitbit_bp.token['expires_in']))
+        fitbit_bp.token["expires_at"] = time_past
+        print("access token: " + fitbit_bp.token["access_token"])
+        print("refresh_token: " + fitbit_bp.token["refresh_token"])
+        print("expiration time " + str(fitbit_bp.token["expires_at"]))
+        print("             in " + str(fitbit_bp.token["expires_in"]))
 
         # this will fail due to expired token or be refreshed automatically
         try:
-            resp = fitbit.get("/1/user/-/profile.json",
-                              headers={"Authorization": "Bearer " +
-                                       fitbit_bp.token["access_token"]},
-                              )
+            resp = fitbit.get(
+                "/1/user/-/profile.json",
+                headers={"Authorization": "Bearer " + fitbit_bp.token["access_token"]},
+            )
             print(resp)
-            print("access token: " + fitbit_bp.token['access_token'])
-            print("refresh_token: " + fitbit_bp.token['refresh_token'])
-            print("expiration time " + str(fitbit_bp.token['expires_at']))
-            print("             in " + str(fitbit_bp.token['expires_in']))
+            print("access token: " + fitbit_bp.token["access_token"])
+            print("refresh_token: " + fitbit_bp.token["refresh_token"])
+            print("expiration time " + str(fitbit_bp.token["expires_at"]))
+            print("             in " + str(fitbit_bp.token["expires_in"]))
 
         except Exception:
             print("exception")
