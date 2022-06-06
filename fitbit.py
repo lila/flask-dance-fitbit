@@ -24,15 +24,22 @@ Once the application is running, the following paths are available:
 import base64
 import os
 from time import time
+import logging
+import sys
 
 import flask_login
 from flask import Flask, redirect, request, url_for
 from flask_dance.contrib.fitbit import fitbit, make_fitbit_blueprint
 
+log = logging.getLogger('requests_oauthlib')
+log.addHandler(logging.StreamHandler(sys.stdout))
+log.setLevel(logging.DEBUG)
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
 app.config["FITBIT_OAUTH_CLIENT_ID"] = os.environ.get("FITBIT_OAUTH_CLIENT_ID")
-app.config["FITBIT_OAUTH_CLIENT_SECRET"] = os.environ.get("FITBIT_OAUTH_CLIENT_SECRET")
+app.config["FITBIT_OAUTH_CLIENT_SECRET"] = os.environ.get(
+    "FITBIT_OAUTH_CLIENT_SECRET")
 fitbit_bp = make_fitbit_blueprint(scope=["activity", "profile"])
 app.register_blueprint(fitbit_bp, url_prefix="/services")
 
@@ -214,7 +221,8 @@ def fitbitexpire():
         try:
             resp = fitbit.get(
                 "/1/user/-/profile.json",
-                headers={"Authorization": "Bearer " + fitbit_bp.token["access_token"]},
+                headers={"Authorization": "Bearer " +
+                         fitbit_bp.token["access_token"]},
             )
             print(resp)
             print("access token: " + fitbit_bp.token["access_token"])
