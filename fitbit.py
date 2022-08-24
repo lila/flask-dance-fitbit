@@ -50,7 +50,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=5, x_host=5, x_proto=5, x_prefix=5)
 app.logger.info("applied proxy fix")
-app.logger.debug(f"wsgi.url_scheme = {environ['wsgi.url_scheme']}")
+app.logger.debug(f"wsgi.url_scheme = {os.environ['wsgi.url_scheme']}")
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
 app.config["FITBIT_OAUTH_CLIENT_ID"] = os.environ.get("FITBIT_OAUTH_CLIENT_ID")
