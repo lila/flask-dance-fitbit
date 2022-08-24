@@ -240,9 +240,5 @@ def fitbitexpire():
 
 if __name__ == "__main__":
     server_port = os.environ.get("PORT", "8080")
-
-    app.wsgi_app = ProxyFix(
-        app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
-    )
-
+    app = ProxyFix(app, x_for=2, x_host=2, x_proto=2, x_prefix=2)
     app.run(debug=False, port=server_port, host="0.0.0.0")
