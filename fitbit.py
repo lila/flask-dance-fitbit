@@ -48,6 +48,10 @@ app.logger.addHandler(stream_handler)
 app.logger.info("app started")
 logging.basicConfig(level=logging.DEBUG)
 
+app = ProxyFix(app, x_for=5, x_host=5, x_proto=5, x_prefix=5)
+app.logger.info("applied proxy fix")
+app.logger.debug(f"wsgi.url_scheme = {environ['wsgi.url_scheme']}")
+
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
 app.config["FITBIT_OAUTH_CLIENT_ID"] = os.environ.get("FITBIT_OAUTH_CLIENT_ID")
 app.config["FITBIT_OAUTH_CLIENT_SECRET"] = os.environ.get(
@@ -268,6 +272,4 @@ def fitbitexpire():
 
 if __name__ == "__main__":
     server_port = os.environ.get("PORT", "8080")
-    app = ProxyFix(app, x_for=5, x_host=5, x_proto=5, x_prefix=5)
-    app.logger.debug(f"wsgi.url_scheme = {environ['wsgi.url_scheme']}")
     app.run(debug=True, port=server_port, host="0.0.0.0")
