@@ -61,8 +61,18 @@ logging.basicConfig(level=logging.DEBUG)
 #
 #app = _force_https(app)
 
-app.config['PREFERRED_URL_SCHEME'] = 'https'
-app.config['wsgi.url_scheme'] = 'https'
+#app.config['PREFERRED_URL_SCHEME'] = 'https'
+#app.config['wsgi.url_scheme'] = 'https'
+
+class ReverseProxied(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        environ["wsgi.url_scheme"] = "https"
+        return self.app(environ, start_response)
+
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
 app.config["FITBIT_OAUTH_CLIENT_ID"] = os.environ.get("FITBIT_OAUTH_CLIENT_ID")
