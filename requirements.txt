@@ -2,3 +2,4 @@ flask-dance
 gunicorn
 flask-login
 python-dotenv
+werkzeug

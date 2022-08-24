@@ -27,6 +27,8 @@ from time import time
 import logging
 import sys
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 import flask_login
 from flask import Flask, redirect, request, url_for
 from flask_dance.contrib.fitbit import fitbit, make_fitbit_blueprint
@@ -238,4 +240,9 @@ def fitbitexpire():
 
 if __name__ == "__main__":
     server_port = os.environ.get("PORT", "8080")
+
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+    )
+
     app.run(debug=False, port=server_port, host="0.0.0.0")
