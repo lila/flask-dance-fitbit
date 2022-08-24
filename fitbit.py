@@ -48,7 +48,7 @@ app.logger.addHandler(stream_handler)
 app.logger.info("app started")
 logging.basicConfig(level=logging.DEBUG)
 
-app = ProxyFix(app, x_for=5, x_host=5, x_proto=5, x_prefix=5)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=5, x_host=5, x_proto=5, x_prefix=5)
 app.logger.info("applied proxy fix")
 app.logger.debug(f"wsgi.url_scheme = {environ['wsgi.url_scheme']}")
 
