@@ -33,11 +33,21 @@ import flask_login
 from flask import Flask, redirect, request, url_for
 from flask_dance.contrib.fitbit import fitbit, make_fitbit_blueprint
 
-log = logging.getLogger('requests_oauthlib')
-log.addHandler(logging.StreamHandler(sys.stdout))
-log.setLevel(logging.DEBUG)
 
 app = Flask(__name__)
+
+# Some logging setup
+stream_handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    "[%(asctime)s] [%(process)d] [%(levelname)s] [%(name)s]: "
+    "%(pathname)s:%(lineno)d - "
+    "%(message)s"
+)
+stream_handler.setFormatter(formatter)
+app.logger.addHandler(stream_handler)
+app.logger.info("app started")
+logging.basicConfig(level=logging.DEBUG)
+
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
 app.config["FITBIT_OAUTH_CLIENT_ID"] = os.environ.get("FITBIT_OAUTH_CLIENT_ID")
 app.config["FITBIT_OAUTH_CLIENT_SECRET"] = os.environ.get(
@@ -58,6 +68,9 @@ class User(flask_login.UserMixin):
 
 @login_manager.user_loader
 def user_loader(email):
+
+    app.logger.debug(f"user_loader ({email})")
+
     if email not in users:
         return
 
@@ -68,6 +81,9 @@ def user_loader(email):
 
 @login_manager.request_loader
 def request_loader(req):
+
+    app.logger.debug(f"request_loader")
+
     email = req.form.get("email")
     if email not in users:
         return
@@ -90,6 +106,9 @@ def index():
     prints the state of flask-login session along with the
     state of the fitbit oauth.
     """
+
+    app.logger.debug("index")
+
     return (
         "Logged in as: "
         + flask_login.current_user.id
@@ -110,6 +129,9 @@ def login():
         if successful, redirects to /
         if not successful, shows "bad login"
     """
+
+    app.logger.debug("/login")
+
     if request.method == "GET":
         return """
                <form action='login' method='POST'>
@@ -120,6 +142,9 @@ def login():
                """
 
     email = request.form["email"]
+
+    app.logger.info(f"/login with {email} attempted")
+
     if email in users and request.form["password"] == users[email]["password"]:
         user = User()
         user.id = email
@@ -139,6 +164,9 @@ def logout():
     Return:
         the string "Logged out"
     """
+
+    app.logger.debug("/logout")
+
     flask_login.logout_user()
     return "Logged out"
 
@@ -241,4 +269,5 @@ def fitbitexpire():
 if __name__ == "__main__":
     server_port = os.environ.get("PORT", "8080")
     app = ProxyFix(app, x_for=5, x_host=5, x_proto=5, x_prefix=5)
-    app.run(debug=False, port=server_port, host="0.0.0.0")
+    app.logger.debug(f"wsgi.url_scheme = {environ['wsgi.url_scheme']}")
+    app.run(debug=True, port=server_port, host="0.0.0.0")
