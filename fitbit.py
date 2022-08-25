@@ -70,9 +70,11 @@ class ReverseProxied(object):
 
     def __call__(self, environ, start_response):
         app.logger.debug(f"inside wsgi, environ = {environ}")
-        environ["wsgi.url_scheme"] = "https"
+#        environ["wsgi.url_scheme"] = "https"
         return self.app(environ, start_response)
 
+app.wsgi_app = ReverseProxied(app.wsgi_app)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
