@@ -48,34 +48,7 @@ app.logger.addHandler(stream_handler)
 app.logger.info("app started")
 logging.basicConfig(level=logging.DEBUG)
 
-#app.logger.debug(f"before = {os.environ}")
-#app.wsgi_app = ProxyFix(app.wsgi_app, x_for=5, x_host=5, x_proto=5, x_prefix=5)
-#app.logger.info("applied proxy fix")
-#app.logger.debug(f"after = {os.environ}")
-
-#def _force_https(app):
-#    def wrapper(environ, start_response):
-#        environ['wsgi.url_scheme'] = 'https'
-#        return app(environ, start_response)
-#    return wrapper
-#
-#app = _force_https(app)
-
-#app.config['PREFERRED_URL_SCHEME'] = 'https'
-#app.config['wsgi.url_scheme'] = 'https'
-
-class ReverseProxied(object):
-    def __init__(self, app):
-        self.app = app
-
-    def __call__(self, environ, start_response):
-        app.logger.debug(f"inside wsgi, environ = {environ}")
-#        environ["wsgi.url_scheme"] = "https"
-        return self.app(environ, start_response)
-
-app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.wsgi_app = ProxyFix(app.wsgi_app)
-app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
 app.config["FITBIT_OAUTH_CLIENT_ID"] = os.environ.get("FITBIT_OAUTH_CLIENT_ID")
