@@ -341,6 +341,8 @@ def testfitbitlogin1():
             f"{x}: {j['user']['fullName']} ({j['user']['gender']}/{j['user']['age']})"
         )
 
+    firestorage.user = None
+
     return result
 
 
