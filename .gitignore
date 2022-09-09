@@ -2,3 +2,4 @@
 .env
 venv
 .vscode
+*service-account.json

@@ -3,3 +3,4 @@ gunicorn
 flask-login
 python-dotenv
 werkzeug
+firebase_admin
