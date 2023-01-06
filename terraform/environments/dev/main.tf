@@ -18,6 +18,7 @@ locals {
     "run.googleapis.com",                  # Cloud Run
     "secretmanager.googleapis.com",        # Secret Manager
     "storage.googleapis.com",              # Cloud Storage
+    "cloudscheduler.googleapis.com",       # Cloud Scheduler
   ]
 }
 
@@ -54,41 +55,6 @@ module "vpc_network" {
   depends_on = [ module.project_services ]
 }
 
-# module "gke" {
-#   depends_on = [module.project_services, module.vpc_network]
-
-#   source         = "../../modules/gke"
-#   project_id     = var.project_id
-#   cluster_name   = "main-cluster"
-#   namespace      = "default"
-#   vpc_network    = "default-vpc"
-#   region         = var.region
-#   min_node_count = 1
-#   max_node_count = 10
-#   machine_type   = "n1-standard-8"
-
-#   # This service account will be created in both GCP and GKE, and will be
-#   # used for workload federation in all microservices.
-#   # See microservices/sample_service/kustomize/base/deployment.yaml for example.
-#   service_account_name = "gke-sa"
-
-#   # See latest stable version at https://cloud.google.com/kubernetes-engine/docs/release-notes-stable
-#   kubernetes_version = "1.23.13-gke.900"
-# }
-
-# module "ingress" {
-#   depends_on = [module.gke]
-
-#   source            = "../../modules/ingress"
-#   project_id        = var.project_id
-#   cert_issuer_email = var.admin_email
-#   region            = var.region
-
-#   # API domain, excluding protocols. E.g. example.com.
-#   api_domain        = var.api_domain
-#   cors_allow_origin = "http://localhost:4200,http://localhost:3000,http://${var.web_app_domain},https://${var.web_app_domain}"
-# }
-
 # Deploy sample-service to CloudRun
 # Uncomment below to enable deploying microservices with CloudRun.
 module "cloudrun-sample" {
@@ -97,7 +63,7 @@ module "cloudrun-sample" {
   source                = "../../modules/cloudrun"
   project_id            = var.project_id
   region                = var.region
-  source_dir            = "../../../microservices/sample_service"
+  source_dir            = "../../.."
   service_name          = "fitbit-flask-test"
   repository_id         = "cloudrun"
   allow_unauthenticated = true
@@ -105,4 +71,16 @@ module "cloudrun-sample" {
                             { name = "FITBIT_OAUTH_CLIENT_ID", value = var.fitbit_oauth_client_id },
                             { name = "FITBIT_OAUTH_CLIENT_SECRET", value = var.fitbit_oauth_client_secret }
                           ]
+}
+
+resource "google_bigquery_dataset" "big_data" {
+  dataset_id  = "market_dataset"
+  description = "This is a test description"
+  location    = var.region
+
+  labels = {
+    env = "deviceconnect"
+  }
+
+  depends_on = [ module.project_services ]
 }

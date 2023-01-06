@@ -17,8 +17,15 @@ resource "google_cloud_run_service_iam_member" "member" {
   role     = "roles/run.invoker"
   member   = "allUsers"
 
-  depends_on = [null_resource.deploy-cloudrun-image]
+  depends_on = [time_sleep.wait_for_cloud_run_service]
 }
+
+resource "time_sleep" "wait_for_cloud_run_service" {
+  create_duration = "30s"
+
+  depends_on = [google_cloud_run_service.webapp]
+}
+
 
 # Creating a custom service account for cloud run
 module "cloud-run-service-account" {
@@ -102,4 +109,27 @@ resource "google_cloud_run_service" "webapp" {
     latest_revision = true
   }
   depends_on = [null_resource.deploy-cloudrun-image]
+}
+
+
+resource "google_cloud_scheduler_job" "job" {
+  project          = var.project_id
+  region           = var.region
+
+  name             = "test-job"
+  description      = "test http job"
+  schedule         = "*/8 * * * *"
+  time_zone        = "America/New_York"
+  attempt_deadline = "320s"
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "GET"
+    uri         = "${google_cloud_run_service.webapp.status[0].url}/allfitbitusers"
+  }
+
+  depends_on = [ google_cloud_run_service.webapp ]
 }
