@@ -73,14 +73,18 @@ module "cloudrun-sample" {
                           ]
 }
 
-resource "google_bigquery_dataset" "fitbit" {
-  dataset_id  = "fitbit"
-  description = "fitbit ingestion tables"
-  location    = var.region
-
-  labels = {
-    goog-packaged-solution = "device-connect-for-fitbit"
-  }
-
-  depends_on = [ module.project_services ]
+module "bigquery" {
+  source                = "../../modules/bigquery"
+  project_id            = var.project_id
+  region                = var.region
 }
+
+module "cloudscheduler" {
+  depends_on = [ module.cloudrun-sample ]
+
+  source                = "../../modules/cloudscheduler"
+  project_id            = var.project_id
+  region                = var.region
+  webapp_base_url       = module.cloudrun-sample.url
+}
+
