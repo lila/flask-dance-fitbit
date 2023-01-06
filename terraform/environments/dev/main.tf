@@ -73,13 +73,13 @@ module "cloudrun-sample" {
                           ]
 }
 
-resource "google_bigquery_dataset" "big_data" {
-  dataset_id  = "market_dataset"
-  description = "This is a test description"
+resource "google_bigquery_dataset" "fitbit" {
+  dataset_id  = "fitbit"
+  description = "fitbit ingestion tables"
   location    = var.region
 
   labels = {
-    env = "deviceconnect"
+    goog-packaged-solution = "device-connect-for-fitbit"
   }
 
   depends_on = [ module.project_services ]

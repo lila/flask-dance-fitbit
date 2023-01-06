@@ -51,7 +51,6 @@ module "cloud-run-service-account" {
   }
 }
 
-
 resource "null_resource" "deploy-cloudrun-image" {
   
   provisioner "local-exec" {
@@ -102,12 +101,18 @@ resource "google_cloud_run_service" "webapp" {
             "autoscaling.knative.dev/minScale" = "0"
             "autoscaling.knative.dev/maxScale" = "1"
         }
+        labels = {
+          goog-packaged-solution = "device-connect-for-fitbit"
+        }
     }
   }
   traffic {
     percent = 100
     latest_revision = true
   }
+
+  
+
   depends_on = [null_resource.deploy-cloudrun-image]
 }
 

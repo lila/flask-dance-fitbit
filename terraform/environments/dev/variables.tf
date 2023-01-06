@@ -13,7 +13,7 @@ variable "env" {
 variable "project_id" {
   type        = string
   description = "GCP Project ID"
-  
+
   validation {
     condition     = length(var.project_id) > 0
     error_message = "The project_id value must be an non-empty string."
@@ -49,12 +49,14 @@ variable "storage_multiregion" {
 }
 
 variable "admin_email" {
-  type = string
+  type    = string
+  default = "admin@yourdomain.com"
 }
 
 variable "api_domain" {
   type        = string
   description = "API endpoint domain, excluding protocol"
+  default     = "localhost"
 }
 
 variable "web_app_domain" {
